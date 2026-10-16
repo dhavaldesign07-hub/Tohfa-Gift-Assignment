@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gift Karo – Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+<style>
+  :root { --ink:#2b1a12; --navy:#15142B; --a:assets/; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html,body { height:100%; }
+  body { background:#e9e9ef; font-family:"Satoshi","DM Sans",sans-serif; color:var(--ink); }
+  .page { position:relative; width:100%; max-width:360px; margin:0 auto; background:#FEFDFC; overflow-x:clip; }
+  /* On a laptop, show the site inside a phone-sized screen */
+  @media (min-width:600px) {
+    body { display:grid; place-items:center; min-height:100vh; padding:24px 0; }
+    .page { width:360px; height:min(800px, calc(100vh - 48px)); overflow-y:auto; border-radius:40px; box-shadow:0 0 0 10px #15142B, 0 30px 80px rgba(21,20,43,.35); scrollbar-width:none; }
+    .page::-webkit-scrollbar { display:none; }
+  }
+  /* ---------- Header (sticky, glass after scroll) ---------- */
+  .hdr { position:sticky; top:0; z-index:20; margin-bottom:-56px; height:56px; border-radius:0 0 12px 12px; transition:background .25s, box-shadow .25s, backdrop-filter .25s; }
+  .hdr.solid { background:rgba(255,255,255,.72); backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%); box-shadow:0 1px 0 rgba(21,20,43,.08); }
+  .hdr .loc { top:12px; } .hdr .cur { top:18px; } .hdr .cart { top:20px; }
+  /* Status bar: only inside the laptop phone frame (real phones show their own) */
+  .sbar { display:none; }
+  @media (min-width:600px) {
+    .sbar { display:flex; justify-content:space-between; align-items:center; height:44px; padding:0 22px; font:600 15px/1 "DM Sans"; color:#2b1a12; }
+    .sbar .r { display:flex; align-items:center; gap:6px; }
+    .hdr { height:100px; margin-bottom:-100px; }
+    .hdr .loc { top:56px; } .hdr .cur { top:62px; } .hdr .cart { top:64px; }
+    .batt { position:relative; width:24px; height:12px; border:1.5px solid currentColor; border-radius:4px; padding:1.5px; }
+    .batt::after { content:""; position:absolute; right:-4px; top:3px; width:2px; height:4px; border-radius:0 1px 1px 0; background:currentColor; }
+    .batt i { display:block; height:100%; border-radius:1.5px; background:currentColor; }
+    .batt.low i { background:#E5484D; }
+    .bars4 { display:flex; align-items:flex-end; gap:2px; } .bars4 i { width:3px; border-radius:1px; background:currentColor; }
+    .bars4.off i { opacity:.25; }
+  }
+  /* ---------- Bottom tab bar (glass) ---------- */
+  .tabs { position:sticky; bottom:16px; z-index:20; width:329px; height:52px; margin:-68px auto 16px; display:flex; padding:6px 7px; border-radius:34px; background:rgba(255,255,255,.86); border:1px solid #ECC8FF; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
+  .tab { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0; border-radius:28px; font:700 9px/12px "Satoshi"; color:#15142B; text-decoration:none; }
+  .tab svg { width:18px; height:18px; }
+  .tab.on { background:linear-gradient(90deg,#B9A7FF,#8FD3FF 35%,#B8F2A6 70%,#FFE08A); }
+  img { display:block; }
+  .scroll { display:flex; overflow-x:auto; scrollbar-width:none; }
+  .scroll::-webkit-scrollbar { display:none; }
+
+  /* ---------- First fold ---------- */
+  .hero { position:relative; height:640px; border-radius:0 0 32px 32px; overflow:hidden;
+    background:linear-gradient(180deg,#FFC59E 0%,#E9B2FF 32%,#9BAAEE 100%); }
+  .abs { position:absolute; }
+  /* Parallax: hero content moves slower than the page; the hero box clips it */
+  .hero-in { position:absolute; inset:0; transform-origin:50% 0; will-change:transform,opacity; }
+  .status { left:16px; top:16px; font:600 16px/21px "DM Sans"; }
+  .bars { right:16px; top:21px; display:flex; align-items:flex-end; gap:3px; }
+  .bars i { width:3px; background:var(--ink); border-radius:1px; }
+  .bars b { width:22px; height:11px; background:var(--ink); border-radius:3px; margin-left:3px; }
+  .loc { left:16px; top:51px; height:32px; display:flex; align-items:center; gap:8px; padding:0 6px; border-radius:21px; backdrop-filter:blur(21px); }
+  .flag { width:20px; height:20px; border-radius:10px; overflow:hidden; background:linear-gradient(#FF9933 0 33%,#fff 33% 66%,#138808 66%); position:relative; }
+  .flag::after { content:""; position:absolute; left:8.5px; top:8.5px; width:3px; height:3px; border:.5px solid #000080; border-radius:50%; }
+  .loc span { font:600 12px/16px "DM Sans"; color:var(--navy); }
+  .cur { left:287px; top:57px; font:500 16px/21px "DM Sans"; color:#000; }
+  .cart { left:328px; top:59px; }
+  .swirl { left:-19px; top:114px; width:359px; }
+  .logo { left:20px; top:127px; font:400 100px/94px "Alfa Slab One"; background:linear-gradient(180deg,#fff 0%,#E9C5FE 100%); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .tag { left:20px; top:320px; width:296px; font:600 18px/23px "DM Sans"; color:#fff; }
+  .who { left:16px; top:383px; width:328px; height:177px; padding:21px 17px; border-radius:28px; background:rgba(255,255,255,.5); border:1px solid rgba(255,255,255,.8); backdrop-filter:blur(24px); }
+  .who h3 { font:700 20px/27px "Satoshi"; color:#000; margin-bottom:20px; }
+  .chips { display:flex; flex-wrap:wrap; gap:4px; }
+  .chip { height:42px; display:flex; align-items:center; gap:8px; padding:0 15px 0 7px; background:#FFFDF9; border:1px solid #D8D8D8; border-radius:24px; font:500 12px/16px "DM Sans"; }
+  .chip.on { border-color:#E6D6C3; }
+  .chip em { width:28px; height:28px; border-radius:40px; display:grid; place-items:center; font-style:normal; font-size:16px; }
+  .cta { left:33px; top:576px; width:294px; height:48px; border:0; border-radius:30px; background:#756FE7; color:#fff; font:500 15px/20px "Satoshi"; cursor:pointer; }
+
+  /* ---------- Sections ---------- */
+  .sec { padding:0 16px; margin-top:48px; }
+  .sec h2 { font:700 20px/27px "Satoshi"; }
+  .sec .sub { font:500 14px/19px "Satoshi"; color:#515151; }
+  .head { margin-bottom:20px; }
+
+  .occ { gap:16px; margin:0 -16px; padding:0 16px; }
+  .occ a { flex:none; position:relative; width:144px; height:160px; border-radius:20px; background:linear-gradient(180deg,#E8F4F8,#DDCFFE); text-decoration:none; }
+  .occ img { position:absolute; left:30px; top:20px; width:78px; height:78px; }
+  .occ span { position:absolute; left:16px; top:122px; font:700 16px/22px "Satoshi"; letter-spacing:-.03em; color:var(--navy); }
+
+  .price { display:grid; grid-template-columns:156px 156px; gap:20px 16px; }
+  .pc { position:relative; height:180px; border-radius:20px; overflow:hidden; text-align:center; }
+  .pc .u, .pc .c { position:absolute; left:0; right:0; font:500 14px/14px "Satoshi"; }
+  .pc .u { top:37px; } .pc .c { top:144px; }
+  .pc b { position:absolute; left:0; right:0; top:59px; font:700 36px/49px "Satoshi"; }
+  .pc .rib { position:absolute; left:0; right:0; bottom:0; height:58px; }
+  .pc .rib::before { content:""; position:absolute; left:4px; right:4px; top:0; border-top:1px dashed #000; }
+  .pc::before, .pc::after { content:""; position:absolute; top:118px; width:8px; height:8px; border-radius:50%; background:#FEFDFC; z-index:1; }
+  .pc::before { left:-4px; } .pc::after { right:-4px; }
+
+  .pills { gap:12px; margin:0 -16px 20px; padding:0 16px; }
+  .pill { flex:none; height:32px; padding:0 13px; border:1px solid #000; border-radius:36px; font:500 14px/30px "Satoshi"; background:none; color:var(--ink); }
+  .pill.on { background:#DCEDDA; }
+  .prods { gap:17px; margin:0 -16px; padding:0 16px; }
+  .prod { flex:none; width:190px; height:229px; border:1px solid #E3E3E3; border-radius:20px; overflow:hidden; background:#F5FBF4; }
+  .prod .im { position:relative; height:155px; overflow:hidden; background:#F7E2B8; }
+  .prod .im img { position:absolute; }
+  .prod .tx { padding:10px 12px; }
+  .prod .n { font:500 12px/16px "Satoshi"; }
+  .prod .p { margin-top:3px; font:700 12px/16px "Satoshi"; }
+  .prod .p s { font:500 10px "Satoshi"; color:#A4A3A3; margin-left:3px; }
+  .prod .p s.sm { font-size:8px; color:#616060; }
+  .prod .p i { font:500 8px "Satoshi"; color:#EE6060; font-style:normal; }
+  .prod .d { margin-top:3px; font:500 9px/12px "DM Sans"; color:#3D3D3D; }
+
+  .best { position:relative; height:315px; margin:0 -16px; }
+  .best h2 { padding-left:16px; }
+  .bi { position:absolute; left:calc(50% - 76.5px); top:47px; width:153px; height:191px; border:0; background:none; cursor:pointer; transition:transform .45s cubic-bezier(.3,.7,.3,1), opacity .45s; }
+  .bi .ring { position:absolute; left:0; bottom:0; width:153px; height:153px; border-radius:50%; }
+  .bi img { position:absolute; left:50%; top:0; height:136px; transform:translateX(-50%); }
+  .best .lbl { position:absolute; left:0; right:0; top:239px; text-align:center; font:700 40px/54px "Satoshi"; letter-spacing:-.03em;
+    background:linear-gradient(180deg,#D4D4D4,rgba(122,122,122,0)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+
+  .trend { position:relative; height:519px; border-radius:20px; overflow:hidden; background:linear-gradient(180deg,#ACD6FF,#E8C0AF); }
+  .trend .t { position:absolute; left:39px; width:249px; font:400 40.25px/55px "Alfa Slab One"; color:transparent; -webkit-text-stroke:1.26px rgba(255,255,255,.6); }
+  .trend .t1 { top:19px; -webkit-mask:linear-gradient(180deg,#000,transparent); mask:linear-gradient(180deg,#000,transparent); }
+  .trend .t3 { top:75px; -webkit-mask:linear-gradient(0deg,#000,transparent); mask:linear-gradient(0deg,#000,transparent); }
+  .trend .t2 { top:44px; color:#fff; -webkit-text-stroke:0; }
+  .trend img { position:absolute; left:19px; top:140px; width:290px; height:290px; }
+  .trend p { position:absolute; left:4px; top:452px; width:320px; text-align:center; font:700 14px/19px "Satoshi"; color:#fff; }
+
+  .newg { display:grid; grid-template-columns:156px 156px; gap:16px; }
+  .nc { position:relative; height:224px; border-radius:20px; overflow:hidden; background:#FF5A45; }
+  .nc img { position:absolute; }
+  .nc .ov { position:absolute; left:0; right:0; bottom:0; height:93px; backdrop-filter:blur(8px); -webkit-mask:linear-gradient(180deg,transparent,#000 40%); mask:linear-gradient(180deg,transparent,#000 40%); }
+  .nc span { position:absolute; left:16px; bottom:26px; font:700 16px/22px "Satoshi"; letter-spacing:-.03em; color:#fff; }
+
+  .social { display:flex; gap:23px; padding:32px 12px 0; }
+  .social a { width:44px; height:44px; border-radius:50%; display:grid; place-items:center; background:rgba(255,255,255,.4); }
+  .social svg { width:24px; height:24px; }
+  .footer { padding-bottom:100px !important; min-height:0 !important; }
+
+  /* Keep every card corner a clean 20px, even with blur and big images inside */
+  .occ a, .pc, .prod, .trend, .nc { border-radius:20px; clip-path:inset(0 round 20px); isolation:isolate; }
+
+  /* ---------- Footer (same as footer/index.html) ---------- */
+  .footer { position:relative; margin-top:40px; min-height:633px; overflow:hidden; padding:0 20px 48px;
+    background:linear-gradient(180deg,#FEFDFC 0%,#E3E8EF 25%,#CCD5E6 50%,#B9C4F0 80%,#B7C4FF 100%); color:var(--navy); }
+  .sky { position:relative; height:380px; }
+  .headline { position:absolute; left:4px; top:244px; font:400 54px/1 "Alfa Slab One"; background:linear-gradient(180deg,#FFFFFF 0%,#DFE7F2 100%); -webkit-background-clip:text; background-clip:text; color:transparent; user-select:none; }
+  .headline svg { display:inline-block; height:36px; width:auto; vertical-align:baseline; margin-left:8px; }
+  .drone { position:absolute; top:120px; left:0; width:225px; z-index:2; animation:fly 12s cubic-bezier(.45,0,.55,1) infinite; }
+  .drone-bob { animation:bob 2.4s ease-in-out infinite; }
+  .drone img { width:100%; }
+  @keyframes fly { 0% { transform:translateX(-265px); } 28%,62% { transform:translateX(calc(var(--mid) - 112px)); } 100% { transform:translateX(calc(var(--w) + 40px)); } }
+  @keyframes bob { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-8px); } }
+  .cloud { position:absolute; left:0; z-index:1; opacity:.95; animation:drift 45s linear infinite; }
+  @keyframes drift { from { transform:translateX(calc(var(--w) + 20px)); } to { transform:translateX(-80px); } }
+  .about { position:relative; z-index:3; background:rgba(255,255,255,.4); border-radius:16px; font-family:"DM Sans"; margin-top:11px; }
+  .about summary { list-style:none; cursor:pointer; display:flex; align-items:center; gap:12px; padding:7px 12px; min-height:32px; font-weight:600; font-size:14px; }
+  .about summary::-webkit-details-marker { display:none; }
+  .about summary span { flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .about summary svg { flex:none; transition:transform .25s; }
+  .about[open] summary svg { transform:rotate(180deg); }
+  .about[open] summary span { white-space:normal; }
+  .about p { padding:0 12px 12px; font-size:13px; line-height:1.5; }
+  .links { padding:21px 12px 0; }
+  .links h4 { font:700 14px/19px "Satoshi"; margin-bottom:12px; }
+  .links a { display:block; font:400 14px/24px "DM Sans"; color:var(--navy); text-decoration:none; }
+  @media (prefers-reduced-motion: reduce) {
+    .drone, .drone-bob, .cloud { animation:none; }
+    .drone { transform:translateX(calc(var(--mid) - 112px)); }
+  }
+
+  /* ---------- Quiz flow ---------- */
+  :root { --st:0px; }
+  @media (min-width:600px) { :root { --st:45px; } .qsb { position:sticky; top:0; z-index:30; margin-bottom:-44px; } }
+  .scr { position:relative; height:calc(755px + var(--st)); padding-top:var(--st);
+    background:linear-gradient(180deg,#FFC59E 0%,#E9B2FF 35%,#B7C4FF 100%); }
+  .scr > * { position:absolute; }
+  .top { left:0; top:calc(var(--st) + 6px); width:100%; height:24px; }
+  .top .bk { position:absolute; left:16px; top:0; width:24px; height:24px; border:0; background:none; cursor:pointer; padding:0; }
+  .top h1 { position:absolute; left:52px; top:0; font:700 18px/24px "Satoshi"; color:#000; }
+  .glass { background:rgba(255,255,255,.5); border:1px solid rgba(255,255,255,.9); border-radius:20px; backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); }
+  /* details */
+  .det { left:16px; top:calc(var(--st) + 56px); width:328px; height:578px; }
+  .det h2 { position:absolute; left:16px; top:16px; font:700 20px/22px "Satoshi"; letter-spacing:-.02em; color:#15142B; }
+  .grp { position:absolute; left:16px; width:296px; }
+  .grp > label { display:block; font:500 12px/16px "Satoshi"; color:#4A4860; margin-bottom:8px; }
+  .dcs { display:flex; flex-wrap:wrap; gap:8px; }
+  .dc { height:32px; padding:0 14px; border:0; border-radius:18px; background:#fff; color:#15142B; font:500 12px/16px "Satoshi"; cursor:pointer; transition:background .2s, color .2s; }
+  .dc.on { background:#6C5CE7; color:#fff; }
+  .inp { position:relative; height:40px; border:1px solid #E4E2EE; border-radius:12px; background:#fff; }
+  .inp input { width:100%; height:100%; border:0; border-radius:12px; padding:0 15px; font:400 12px/16px "Satoshi"; color:#15142B; background:none; outline:none; }
+  .inp input::placeholder { color:#908F97; }
+  .inp svg { position:absolute; right:13px; top:10px; pointer-events:none; }
+  .go { left:33px; top:calc(var(--st) + 658px); width:294px; height:48px; border:0; border-radius:30px; background:#756FE7; color:#fff; font:500 15px/20px "Satoshi"; cursor:pointer; }
+  /* questions */
+  .cnt { left:20px; top:calc(var(--st) + 52px); font:700 12px/16px "Satoshi"; color:#000; }
+  .rp { right:20px; top:calc(var(--st) + 54px); display:flex; align-items:center; gap:4px; border:0; background:none; padding:0; font:700 12px/16px "Satoshi"; color:#000; cursor:pointer; }
+  .prog { left:20px; top:calc(var(--st) + 76px); display:flex; gap:5px; }
+  .prog i { width:60px; height:6px; border-radius:4px; background:rgba(21,20,43,.15); transition:background .3s; }
+  .prog i.on { background:#EEEEEE; }
+  .qc { left:16px; top:calc(var(--st) + 102px); width:328px; height:394px; background:rgba(255,255,255,.5); border:1px solid rgba(255,255,255,.9); border-radius:20px; backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); }
+  .qc h2 { position:absolute; left:16px; top:23px; width:288px; font:700 20px/22px "Satoshi"; letter-spacing:-.02em; color:#15142B; }
+  .ans { position:absolute; top:91px; width:140px; height:194px; border:3px solid transparent; border-radius:12px; padding:0; cursor:pointer; transition:transform .2s, border-color .2s; }
+  .ans:active { transform:scale(.97); }
+  .ans.a { left:15px; background:linear-gradient(180deg,#FFE0EE,#FF9EC4) border-box; }
+  .ans.b { left:171px; background:linear-gradient(180deg,#D6ECFF,#8FC9F2) border-box; }
+  .ans.on { border-color:#fff; }
+  .ans .ph { position:absolute; left:5px; top:5px; width:124px; height:141px; border-radius:6px; overflow:hidden; }
+  .ans .ph img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ans b { position:absolute; left:9px; top:159px; width:96px; text-align:left; font:700 12px/16px "Satoshi"; color:#3C3C42; }
+  .ans .chk { position:absolute; left:103px; top:157px; opacity:0; transform:scale(.6); transition:opacity .2s, transform .2s; }
+  .ans.on .chk { opacity:1; transform:none; }
+  .nx { position:absolute; left:15px; top:325px; width:296px; height:48px; border:0; border-radius:30px; background:#756FE7; color:#fff; font:500 15px/20px "Satoshi"; cursor:pointer; transition:opacity .2s; }
+  .nx:disabled { opacity:.5; cursor:default; }
+  .sf { left:16px; top:calc(var(--st) + 508px); font:700 12px/16px "Satoshi"; color:#000; }
+  .sum { left:16px; top:calc(var(--st) + 536px); width:300px; font:500 12.5px/17px "Satoshi"; color:#15142B; }
+  .ask { left:16px; top:calc(var(--st) + 671px); width:328px; height:52px; border-radius:30px; background:#fff; display:block; }
+  .ask input { position:absolute; left:16px; top:0; width:260px; height:52px; border:0; background:none; outline:none; font:400 14px/19px "Satoshi"; color:#15142B; }
+  .ask input::placeholder { color:#7A7890; }
+  .mic { position:absolute; left:282px; top:6px; width:40px; height:40px; border-radius:20px; display:grid; place-items:center; background:#756FE7; }
+  .mic svg { stroke:#fff; }
+  /* loading */
+  .ld img { left:105px; top:calc(var(--st) + 239px); width:150px; height:150px; }
+  .ld p { left:80px; top:calc(var(--st) + 383px); width:200px; text-align:center; font:400 14px/19px "Satoshi"; color:#000; transition:opacity .3s; }
+  /* results */
+  .res { position:relative; background:linear-gradient(180deg,#FFC59E 0px,rgba(233,178,255,.4) 243px,rgba(247,245,251,0) 392px) no-repeat, #FEFDFC; padding-top:var(--st); }
+  .rtop { position:sticky; top:max(0px, calc(var(--st) - 1px)); z-index:20; height:52px; border-radius:0 0 12px 12px; transition:background .25s, box-shadow .25s; }
+  .rtop.solid { background:rgba(255,255,255,.72); backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%); box-shadow:0 1px 0 rgba(21,20,43,.08); }
+  .rtop .bk { position:absolute; left:16px; top:6px; width:24px; height:24px; border:0; background:none; padding:0; cursor:pointer; }
+  .rtop h1 { position:absolute; left:52px; top:6px; font:700 18px/24px "Satoshi"; color:#000; }
+  .rtags { margin:0 16px; font:400 10px/13px "DM Sans"; color:#000; }
+  .fchips { gap:8px; padding:0 16px; margin-top:20px; }
+  .fchip { flex:none; height:32px; padding:0 12px; border:0; border-radius:16px; background:#fff; color:#15142B; font:600 12.5px/16px "DM Sans"; cursor:pointer; }
+  .fchip.on { background:#15142B; color:#fff; }
+  .rsec { padding:0 16px; margin-top:28px; }
+  .rsec + .rsec { margin-top:40px; }
+  .rh { display:flex; justify-content:space-between; align-items:center; }
+  .rh h2 { font:700 20px/27px "Satoshi"; color:#2B1A12; }
+  .rh .sa, .rs a { font:700 12.5px/17px "Satoshi"; color:#756FE7; text-decoration:none; }
+  .rs { display:flex; justify-content:space-between; align-items:center; margin-top:0; }
+  .rs span { font:500 14px/19px "Satoshi"; color:#515151; }
+  .rsec .prods { margin-top:20px; }
+  .prod .im img { position:static; width:100%; height:100%; object-fit:cover; }
+  .div { display:flex; align-items:center; gap:10px; margin:45px 16px 0; }
+  .div + .rsec { margin-top:44px; }
+  .div i { flex:1; height:1px; background:rgba(21,20,43,.15); }
+  .div span { font:700 11px/15px "Satoshi"; letter-spacing:.1em; color:#7A7890; }
+  .res .footer { margin-top:40px; }
+  .tabs .tab { position:relative; z-index:1; background:none !important; -webkit-tap-highlight-color:transparent; transition:transform 150ms cubic-bezier(0.22,1,0.36,1); }
+  .tabs .tab:active { transform:scale(0.97); }
+  .tpill { position:absolute; top:5px; left:0; right:100%; height:40px; border-radius:28px; pointer-events:none; background:linear-gradient(90deg,#B9A7FF,#8FD3FF 35%,#B8F2A6 70%,#FFE08A);
+    transition:left var(--l-dur,480ms) cubic-bezier(0.22,1,0.36,1), right var(--r-dur,480ms) cubic-bezier(0.22,1,0.36,1); }
+  @media (prefers-reduced-motion: reduce) { .tabs .tab:active { transform:none; } .tpill { transition:none !important; } }
+  .rtop.solid { background:#FEFDFC !important; backdrop-filter:none !important; -webkit-backdrop-filter:none !important; }
+  .page.scrolled .qsb { background:#FEFDFC; }
+  .inp input[type=date]::-webkit-calendar-picker-indicator { opacity:0; position:absolute; right:0; width:44px; height:100%; cursor:pointer; }
+  .page:not(.show-tabs) .tabs { display:none; }
+  .cloud { animation-name:drift, float !important; animation-timing-function:linear, ease-in-out !important; animation-iteration-count:infinite !important; }
+  @keyframes float { 0%,100% { translate:0 0; } 50% { translate:0 -7px; } }
+  .cloud:nth-of-type(1) { animation-duration:38s, 5s !important; animation-delay:-7s, -1s !important; }
+  .cloud:nth-of-type(2) { animation-duration:91s, 7s !important; animation-delay:-63s, -3s !important; }
+  .cloud:nth-of-type(3) { animation-duration:57s, 6s !important; animation-delay:-41s, -4s !important; }
+  .cloud:nth-of-type(4) { animation-duration:124s, 8s !important; animation-delay:-20s, -2s !important; }
+  .cloud:nth-of-type(5) { animation-duration:72s, 5.5s !important; animation-delay:-50s, -5s !important; }
+</style>
+</head>
+<body>
+<main class="page" id="page">
+  <div class="qsb">
+    <div class="sbar" aria-hidden="true"><span id="clk"></span><span class="r"><span class="bars4" id="net"><i style="height:4px"></i><i style="height:6px"></i><i style="height:8px"></i><i style="height:10px"></i></span><span id="pct" style="font-size:11px"></span><span class="batt" id="batt"><i style="width:100%"></i></span></span></div>
+  </div>
+
+  <!-- 1. Quiz details -->
+  <section class="scr" id="det">
+    <div class="top"><a class="bk" href="index.html" aria-label="Back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M13.5 6L7.5 12L13.5 18" stroke="#000" stroke-linecap="round" stroke-linejoin="round"/></svg></a><h1>New gift</h1></div>
+    <form class="det glass" onsubmit="return false">
+      <h2>Who are you gifting?</h2>
+      <div class="grp" style="top:54px"><label>Relation</label><div class="dcs"><button class="dc on" type="button">Sister</button><button class="dc" type="button">Partner</button><button class="dc" type="button">Mom</button><button class="dc" type="button">Dad</button><button class="dc" type="button">Brother</button><button class="dc" type="button">Friend</button></div></div>
+      <div class="grp" style="top:174px"><label>Name of the Relative</label><div class="inp"><input id="nm" placeholder="e.g. Ananya" autocomplete="off"></div></div>
+      <div class="grp" style="top:258px"><label>Occasion</label><div class="dcs"><button class="dc" type="button">Birthday</button><button class="dc" type="button">Diwali</button><button class="dc" type="button">Anniversary</button><button class="dc" type="button">Just because</button></div></div>
+      <div class="grp" style="top:378px;width:144px"><label>Date</label><div class="inp"><input id="dt" type="date" value="2026-10-19" aria-label="Date"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#B1B1B1" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.33" width="15" height="15" rx="1.67"/><path d="M13.33 1.67V5M6.67 1.67V5M2.5 8.33h15"/></svg></div></div>
+      <div class="grp" style="top:462px"><label>Budget</label><div class="dcs"><button class="dc" type="button">Under ₹1,000</button><button class="dc" type="button">₹1,000–2,500</button><button class="dc" type="button">₹2,500+</button></div></div>
+    </form>
+    <button class="go" id="start">START QUIZ</button>
+  </section>
+
+  <section class="scr qz" id="q1" hidden>
+    <div class="top"><button class="bk" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M13.5 6L7.5 12L13.5 18" stroke="#000" stroke-linecap="round" stroke-linejoin="round"/></svg></button><h1>Start the quiz</h1></div>
+    <div class="cnt">1/5</div>
+    <div class="prog"><i class=on></i><i></i><i></i><i></i><i></i></div>
+    <div class="qc">
+      <h2 data-q="{n}’s perfect Sunday looks like…"></h2>
+      <button class="ans a" data-i="0"><span class="ph"><img src="assets/q/1.png" alt=""></span><b>Cosy day in</b><svg class="chk" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3C3C42" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></button>
+      <button class="ans b" data-i="1"><span class="ph"><img src="assets/q/2.png" alt=""></span><b>Out & about</b><svg class="chk" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3C3C42" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></button>
+      <button class="nx" disabled>NEXT</button>
+    </div>
+    <p class="sf"></p><p class="sum"></p>
+    <label class="ask"><input placeholder="Or tell me in your own words…"><span class="mic"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#000" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 4.17a2.5 2.5 0 015 0v4.16a2.5 2.5 0 01-5 0V4.17z"/><path d="M4.17 8.33a5.83 5.83 0 0011.66 0M6.67 17.5h6.66M10 14.17v3.33"/></svg></span></label>
+  </section>
+  <section class="scr qz" id="q2" hidden>
+    <div class="top"><button class="bk" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M13.5 6L7.5 12L13.5 18" stroke="#000" stroke-linecap="round" stroke-linejoin="round"/></svg></button><h1>Start the quiz</h1></div>
+    <div class="cnt">2/5</div><button class="rp" data-replay><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#000" stroke-width="1.333" stroke-linecap="round" stroke-linejoin="round"><path d="M4.67 6l-2-2 2-2"/><path d="M2.67 4H10a4 4 0 01.66 7.95H4"/></svg>REPLAY</button>
+    <div class="prog"><i class=on></i><i class=on></i><i></i><i></i><i></i></div>
+    <div class="qc">
+      <h2 data-q="If you walked into {n}’s room, it would look…"></h2>
+      <button class="ans a" data-i="0"><span class="ph"><img src="assets/q/3.png" alt=""></span><b>Calm & minimal</b><svg class="chk" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3C3C42" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></button>
+      <button class="ans b" data-i="1"><span class="ph"><img src="assets/q/4.png" alt=""></span><b>Colourful & full</b><svg class="chk" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3C3C42" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></button>
+      <button class="nx" disabled>NEXT</button>
+    </div>
+    <p class="sf"></p><p class="sum"></p>
+    <label class="ask"><input placeholder="Or tell me in your own words…"><span class="mic"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#000" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 4.17a2.5 2.5 0 015 0v4.16a2.5 2.5 0 01-5 0V4.17z"/><path d="M4.17 8.33a5.83 5.83 0 0011.66 0M6.67 17.5h6.66M10 14.17v3.33"/></svg></span></label>
+  </section>
+  <section class="scr qz" id="q3" hidden>
+    <div class="top"><button class="bk" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M13.5 6L7.5 12L13.5 18" stroke="#000" stroke-linecap="round" stroke-linejoin="round"/></svg></button><h1>Start the quiz</h1></div>
+    <div class="cnt">3/5</div><button class="rp" data-replay><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#000" stroke-width="1.333" stroke-linecap="round" stroke-linejoin="round"><path d="M4.67 6l-2-2 2-2"/><path d="M2.67 4H10a4 4 0 01.66 7.95H4"/></svg>REPLAY</button>
+    <div class="prog"><i class=on></i><i class=on></i><i class=on></i><i></i><i></i></div>
+    <div class="qc">
+      <h2 data-q="Would {n} rather get…"></h2>
+      <button class="ans a" data-i="0"><span class="ph"><img src="assets/q/5.png" alt=""></span><b>Keep forever</b><svg class="chk" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3C3C42" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></button>
+      <button class="ans b" data-i="1"><span class="ph"><img src="assets/q/6.png" alt=""></span><b>Use every day</b><svg class="chk" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3C3C42" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></button>
+      <button class="nx" disabled>NEXT</button>
+    </div>
+    <p class="sf"></p><p class="sum"></p>
+    <label class="ask"><input placeholder="Or tell me in your own words…"><span class="mic"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#000" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 4.17a2.5 2.5 0 015 0v4.16a2.5 2.5 0 01-5 0V4.17z"/><path d="M4.17 8.33a5.83 5.83 0 0011.66 0M6.67 17.5h6.66M10 14.17v3.33"/></svg></span></label>
+  </section>
+  <section class="scr qz" id="q4" hidden>
+    <div class="top"><button class="bk" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M13.5 6L7.5 12L13.5 18" stroke="#000" stroke-linecap="round" stroke-linejoin="round"/></svg></button><h1>Start the quiz</h1></div>
+    <div class="cnt">4/5</div><button class="rp" data-replay><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#000" stroke-width="1.333" stroke-linecap="round" stroke-linejoin="round"><path d="M4.67 6l-2-2 2-2"/><path d="M2.67 4H10a4 4 0 01.66 7.95H4"/></svg>REPLAY</button>
+    <div class="prog"><i class=on></i><i class=on></i><i class=on></i><i class=on></i><i></i></div>
+    <div class="qc">
+      <h2 data-q="What makes {n}’s day instantly better?"></h2>
+      <button class="ans a" data-i="0"><span class="ph"><img src="assets/q/7.png" alt=""></span><b>Read & make</b><svg class="chk" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3C3C42" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></button>
+      <button class="ans b" data-i="1"><span class="ph"><img src="assets/q/8.png" alt=""></span><b>Pampering</b><svg class="chk" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3C3C42" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></button>
+      <button class="nx" disabled>NEXT</button>
+    </div>
+    <p class="sf"></p><p class="sum"></p>
+    <label class="ask"><input placeholder="Or tell me in your own words…"><span class="mic"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#000" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 4.17a2.5 2.5 0 015 0v4.16a2.5 2.5 0 01-5 0V4.17z"/><path d="M4.17 8.33a5.83 5.83 0 0011.66 0M6.67 17.5h6.66M10 14.17v3.33"/></svg></span></label>
+  </section>
+  <section class="scr qz" id="q5" hidden>
+    <div class="top"><button class="bk" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M13.5 6L7.5 12L13.5 18" stroke="#000" stroke-linecap="round" stroke-linejoin="round"/></svg></button><h1>Start the quiz</h1></div>
+    <div class="cnt">5/5</div><button class="rp" data-replay><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#000" stroke-width="1.333" stroke-linecap="round" stroke-linejoin="round"><path d="M4.67 6l-2-2 2-2"/><path d="M2.67 4H10a4 4 0 01.66 7.95H4"/></svg>REPLAY</button>
+    <div class="prog"><i class=on></i><i class=on></i><i class=on></i><i class=on></i><i class=on></i></div>
+    <div class="qc">
+      <h2 data-q="What would help {n} most right now?"></h2>
+      <button class="ans a" data-i="0"><span class="ph"><img src="assets/q/9.png" alt=""></span><b>A little break</b><svg class="chk" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3C3C42" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></button>
+      <button class="ans b" data-i="1"><span class="ph"><img src="assets/q/10.png" alt=""></span><b>A little boost</b><svg class="chk" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3C3C42" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></button>
+      <button class="nx" disabled>DONE</button>
+    </div>
+    <p class="sf"></p><p class="sum"></p>
+    <label class="ask"><input placeholder="Or tell me in your own words…"><span class="mic"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#000" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 4.17a2.5 2.5 0 015 0v4.16a2.5 2.5 0 01-5 0V4.17z"/><path d="M4.17 8.33a5.83 5.83 0 0011.66 0M6.67 17.5h6.66M10 14.17v3.33"/></svg></span></label>
+  </section>
+  <!-- 7. AI is thinking -->
+  <section class="scr ld" id="ld" hidden>
+    <img src="assets/giftbox.png" alt="">
+    <p id="ldt" aria-live="polite">Reading your 5 answers…</p>
+  </section>
+
+  <!-- 8. Personalised gifts -->
+  <section class="res" id="res" hidden>
+    <div class="rtop" id="rtop"><a class="bk" href="index.html" aria-label="Back to home"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M13.5 6L7.5 12L13.5 18" stroke="#000" stroke-linecap="round" stroke-linejoin="round"/></svg></a><h1 id="rtitle">Gifts for Ananya</h1></div>
+    <p class="rtags" id="rtags"></p>
+    <div class="scroll fchips"><button class="fchip on">Under ₹2,500</button><button class="fchip">Arrives by 17 Oct</button><button class="fchip">New</button><button class="fchip">Price: Low to High</button><button class="fchip">Price: High to Low</button></div>
+    <section class="rsec"><div class="rh"><h2>Cosy Sunday kit</h2></div><div class="rs"><span>Because cosy day in + read &amp; make</span><a href="#">See all ›</a></div><div class="scroll prods"><div class="prod"><div class="im"><img src="assets/g/1.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Soft Pink Cushion</p><p class="p">CAD 10.90</p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/g/2.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Personalised Tea mug</p><p class="p">CAD 8.77</p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/g/3.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Scented Candles</p><p class="p">CAD 19.77<s>CAD 12.55</s></p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/g/4.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Scribble Board Game</p><p class="p">CAD 25.07 <s class="sm">CAD 12.55</s> <i>(25% OFF)</i></p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/g/5.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Photo Pendant Necklace</p><p class="p">CAD 12.77 <s class="sm">CAD 10.55</s> <i>(25% OFF)</i></p><p class="d">Delivery by 06th Oct</p></div></div></div></section><section class="rsec"><div class="rh"><h2 data-t="Because {she} {loves} books & crafts">Because she loves books &amp; crafts</h2></div><div class="rs"><span>For creative soul</span><a href="#">See all ›</a></div><div class="scroll prods"><div class="prod"><div class="im"><img src="assets/g/6.png" alt="" loading="lazy"></div><div class="tx"><p class="n">DIY Craft Kit</p><p class="p">CAD 11.90</p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/g/7.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Fairy Lights</p><p class="p">CAD 24.77</p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/g/8.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Block Print Bedsheet</p><p class="p">CAD 33.77<s>CAD 12.55</s></p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/g/9.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Bright Plant Pots</p><p class="p">CAD 28.07 <s class="sm">CAD 12.55</s> <i>(25% OFF)</i></p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/g/10.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Fun Stickers</p><p class="p">CAD 16.77 <s class="sm">CAD 10.55</s> <i>(25% OFF)</i></p><p class="d">Delivery by 06th Oct</p></div></div></div></section><section class="rsec"><div class="rh"><h2 data-t="Keepsakes {shell} treasure">Keepsakes she’ll treasure</h2></div><div class="rs"><span>Something thoughtful to cherish</span><a href="#">See all ›</a></div><div class="scroll prods"><div class="prod"><div class="im"><img src="assets/g/11.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Personalised Necklace</p><p class="p">CAD 20.90</p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/g/12.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Photo Frame</p><p class="p">CAD 21.77</p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/g/13.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Custom Drawing</p><p class="p">CAD 33.77<s>CAD 12.55</s></p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/g/14.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Engraved Pen</p><p class="p">CAD 22.07 <s class="sm">CAD 12.55</s> <i>(25% OFF)</i></p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/g/15.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Perfume Set</p><p class="p">CAD 16.77 <s class="sm">CAD 10.55</s> <i>(25% OFF)</i></p><p class="d">Delivery by 06th Oct</p></div></div></div></section><section class="rsec"><div class="rh"><h2>Little joys</h2></div><div class="rs"><span data-t="For {his} skin care">For her Skin Care</span><a href="#">See all ›</a></div><div class="scroll prods"><div class="prod"><div class="im"><img src="assets/g/16.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Bath and Body Hamper</p><p class="p">CAD 21.77</p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/g/17.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Skin Care Set</p><p class="p">CAD 22.07 <s class="sm">CAD 12.55</s> <i>(25% OFF)</i></p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/g/18.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Good Vibes Good Life Book</p><p class="p">CAD 20.90</p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/g/19.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Shiva Dome Terrarium</p><p class="p">CAD 16.77 <s class="sm">CAD 10.55</s> <i>(25% OFF)</i></p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/g/20.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Teddy Bear</p><p class="p">CAD 33.77<s>CAD 12.55</s></p><p class="d">Delivery by 06th Oct</p></div></div></div></section><section class="rsec"><div class="rh"><h2 data-t="A little boost for {her}">A little boost for her</h2></div><div class="rs"><span data-t="For {his} health">For her health</span><a href="#">See all ›</a></div><div class="scroll prods"><div class="prod"><div class="im"><img src="assets/g/21.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Yoga Mat</p><p class="p">CAD 17.77</p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/g/22.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Smart Watch</p><p class="p">CAD 34.90</p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/g/23.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Desk Lamp</p><p class="p">CAD 33.77<s>CAD 12.55</s></p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/g/24.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Healthy Snack Box</p><p class="p">CAD 22.07 <s class="sm">CAD 12.55</s> <i>(25% OFF)</i></p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/g/19.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Shiva Dome Terrarium</p><p class="p">CAD 16.77 <s class="sm">CAD 10.55</s> <i>(25% OFF)</i></p><p class="d">Delivery by 06th Oct</p></div></div></div></section><div class="div"><i></i><span>MORE GIFTS IN PUNE</span><i></i></div><section class="rsec"><div class="rh"><h2 data-t="Best {occ} Gifts">Best Birthday Gifts</h2><a class="sa" href="#">See all ›</a></div><div class="scroll prods"><div class="prod"><div class="im"><img src="assets/g/25.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Stylish Tote Bag</p><p class="p">CAD 43.90</p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/g/26.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Wallet</p><p class="p">CAD 14.77</p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/g/27.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Snacks Gift Hamper</p><p class="p">CAD 14.77<s>CAD 12.55</s></p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/g/28.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Earbuds</p><p class="p">CAD 14.77 <s class="sm">CAD 12.55</s> <i>(25% OFF)</i></p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/g/29.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Crochet Combo</p><p class="p">CAD 12.77 <s class="sm">CAD 10.55</s> <i>(25% OFF)</i></p><p class="d">Delivery by 06th Oct</p></div></div></div></section><section class="rsec"><div class="rh"><h2 data-t="Best {occ} Gifts">Best Birthday Gifts</h2><a class="sa" href="#">See all ›</a></div><div class="scroll prods"><div class="prod"><div class="im"><img src="assets/g/27.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Snacks Gift Hamper</p><p class="p">CAD 14.77<s>CAD 12.55</s></p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/g/28.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Earbuds</p><p class="p">CAD 14.77 <s class="sm">CAD 12.55</s> <i>(25% OFF)</i></p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/g/29.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Crochet Combo</p><p class="p">CAD 12.77 <s class="sm">CAD 10.55</s> <i>(25% OFF)</i></p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/g/26.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Wallet</p><p class="p">CAD 14.77</p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/g/25.png" alt="" loading="lazy"></div><div class="tx"><p class="n">Stylish Tote Bag</p><p class="p">CAD 43.90</p><p class="d">Delivery by 06th Oct</p></div></div></div></section>
+  <!-- Footer -->
+  <footer class="footer" id="footer">
+    <div class="sky">
+      <img class="cloud" src="assets/cloud2.png" style="top:40px;width:62px;animation-duration:38s;animation-delay:-7s" alt="">
+      <img class="cloud" src="assets/cloud2.png" style="top:89px;width:48px;animation-duration:91s;animation-delay:-63s" alt="">
+      <img class="cloud" src="assets/cloud2.png" style="top:107px;width:66px;animation-duration:57s;animation-delay:-41s" alt="">
+      <img class="cloud" src="assets/cloud2.png" style="top:181px;width:45px;animation-duration:124s;animation-delay:-20s" alt="">
+      <div class="headline" aria-label="Sending Pyaarcel">Sending<br>Pyaarcel<svg viewBox="0 0 39 34" aria-hidden="true"><defs><linearGradient id="hg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#DFE7F2"/></linearGradient></defs><path fill="url(#hg)" d="M35.5189 2.96767C34.5785 2.02684 33.4619 1.28049 32.233 0.771291C31.0041 0.262088 29.6869 0 28.3567 0C27.0264 0 25.7092 0.262088 24.4803 0.771291C23.2514 1.28049 22.1349 2.02684 21.1945 2.96767L19.2428 4.91933L17.2911 2.96767C15.3916 1.06814 12.8153 0.000984598 10.1289 0.000984618C7.44256 0.000984638 4.86623 1.06814 2.96669 2.96767C1.06715 4.86721 2.00149e-08 7.44354 0 10.1299C-2.00149e-08 12.8163 1.06715 15.3926 2.96669 17.2921L4.91835 19.2438L19.2428 33.5682L33.5672 19.2438L35.5189 17.2921C36.4597 16.3517 37.2061 15.2352 37.7153 14.0063C38.2245 12.7773 38.4866 11.4601 38.4866 10.1299C38.4866 8.79966 38.2245 7.48246 37.7153 6.25354C37.2061 5.02462 36.4597 3.90807 35.5189 2.96767Z"/></svg></div>
+      <div class="drone" aria-hidden="true"><div class="drone-bob"><img src="assets/drone-anim.png" alt=""></div></div>
+    </div>
+  </footer>
+  </section>
+  <nav class="tabs" aria-label="Main">
+    <a class="tab on" href="index.html" aria-current="page"><svg viewBox="0 0 18 18" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7c0-.4.3-.7.7-.7h10.6c.4 0 .7.3.7.7v1.3c0 .4-.3.7-.7.7H3.7c-.4 0-.7-.3-.7-.7V7zM9 6.3V15M13.7 9v4.7c0 .7-.6 1.3-1.4 1.3H5.7c-.7 0-1.4-.6-1.4-1.3V9M6 6.3a1.7 1.7 0 010-3.3c1.3 0 2.5 1.3 3 3.3.5-2 1.7-3.3 3-3.3a1.7 1.7 0 010 3.3"/></svg>Home</a>
+    <a class="tab" href="#"><svg viewBox="0 0 18 18" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round"><rect x="2.75" y="2.75" width="5" height="5" rx=".8"/><rect x="10.25" y="2.75" width="5" height="5" rx=".8"/><rect x="2.75" y="10.25" width="5" height="5" rx=".8"/><rect x="10.25" y="10.25" width="5" height="5" rx=".8"/></svg>Explore</a>
+    <a class="tab" href="#"><svg viewBox="0 0 18 18" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3.75" width="12" height="12" rx="1.5"/><path d="M12 2.25v3M6 2.25v3M3 8h12"/><path d="M7.8 13.6l1.2-.7 1.2.7-.2-1.4 1-1-1.4-.2L9 9.8l-.6 1.2-1.4.2 1 1z" fill="#000" stroke="none"/></svg>Reminders</a>
+    <a class="tab" href="#"><svg viewBox="0 0 18 18" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="7.5" r="5.25"/><path d="M15.75 15.75l-4.5-4.5"/></svg>Abroad</a>
+    <a class="tab" href="#"><svg viewBox="0 0 18 18" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="6.75"/><circle cx="9" cy="7.5" r="2.25"/><path d="M4.6 14.1A3 3 0 017.5 12h3a3 3 0 012.9 2.1"/></svg>Profile</a>
+  </nav>
+</main>
+<script>
+  // Phones: scale the 360px design to the screen width so spacing stays exactly as in Figma
+  (() => {
+    const fit = () => {
+      const p = document.querySelector('.page'), w = document.documentElement.clientWidth;
+      p.style.zoom = w < 600 ? w / 360 : '';
+      window.tabsRefresh?.();
+    };
+    fit(); addEventListener('resize', fit); addEventListener('load', fit);
+  })();
+
+  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+  const page = $('#page');
+  const boxed = () => matchMedia('(min-width:600px)').matches;
+  const Q = [["Cosy day in", "Out & about", "Cosy Sundays", "Out & about"], ["Calm & minimal", "Colourful & full", "Calm & minimal", "Colourful & full"], ["Keep forever", "Use every day", "Keepsakes", "Everyday use"], ["Read & make", "Pampering", "Read & make", "Pampering"], ["A little break", "A little boost", "A little break", "A little boost"]];
+  const picks = [];
+  let name = 'Ananya';
+  const P = { Sister:['she','her','her'], Mom:['she','her','her'], Brother:['he','him','his'], Dad:['he','him','his'], Partner:['they','them','their'], Friend:['they','them','their'] };
+  const grp = i => $$('.dcs')[i].querySelector('.dc.on')?.textContent || '';
+  const ctx = () => {
+    const rel = grp(0) || 'Friend', p = P[rel] || P.Friend, nm = $('#nm').value.trim(), d = $('#dt').valueAsDate;
+    return { rel, who: nm || 'your ' + rel.toLowerCase(), she: p[0], her: p[1], his: p[2], occ: grp(1), bud: grp(2),
+      date: d ? d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' }) : '' };
+  };
+  const cap = t => t.charAt(0).toUpperCase() + t.slice(1);
+  // Relation picked on the home page
+  const rel = new URLSearchParams(location.search).get('rel');
+  if (rel) $$('.dcs')[0].querySelectorAll('.dc').forEach(c => c.classList.toggle('on', c.textContent === rel));
+
+  // Single-select chips on the details form
+  $$('.dcs').forEach(g => g.addEventListener('click', e => {
+    const b = e.target.closest('.dc'); if (!b) return;
+    g.querySelectorAll('.dc').forEach(c => c.classList.toggle('on', c === b));
+  }));
+
+  const show = id => {
+    $$('.scr, .res').forEach(s => s.hidden = s.id !== id);
+    page.classList.toggle('show-tabs', id === 'res');
+    (boxed() ? page : document.scrollingElement).scrollTop = 0;
+    if (id === 'res') { requestAnimationFrame(() => { size(); window.tabsRefresh?.(); }); onScroll(); }
+  };
+  const summary = n => [grp(0), grp(1), ctx().date, 'Pune', ...picks.slice(0, n).map((p, i) => Q[i][2 + p])].filter(Boolean).join(' · ');
+  const fill = i => {
+    const s = $('#q' + (i + 1));
+    s.querySelector('h2').textContent = cap(s.querySelector('h2').dataset.q.replace('{n}', name));
+    s.querySelector('.sf').textContent = cap(name) + ' so far';
+    s.querySelector('.sum').textContent = summary(i);
+    s.querySelectorAll('.ans').forEach(a => a.classList.toggle('on', picks[i] === +a.dataset.i));
+    s.querySelector('.nx').disabled = picks[i] === undefined;
+  };
+  const goQ = i => { fill(i); show('q' + (i + 1)); };
+
+  $('#start').onclick = () => { name = ctx().who; goQ(0); };
+  $$('.qz').forEach((s, i) => {
+    s.querySelectorAll('.ans').forEach(a => a.onclick = () => {
+      picks[i] = +a.dataset.i;
+      s.querySelectorAll('.ans').forEach(x => x.classList.toggle('on', x === a));
+      s.querySelector('.nx').disabled = false;
+    });
+    s.querySelector('.nx').onclick = () => i < 4 ? goQ(i + 1) : think();
+    s.querySelector('[data-back]').onclick = () => i ? goQ(i - 1) : show('det');
+    const r = s.querySelector('[data-replay]');
+    if (r) r.onclick = () => { if (confirm('Start over? Your answers will be cleared.')) { picks.length = 0; goQ(0); } };
+  });
+
+  // AI thinking: 3 lines, one per third of the gift box animation (≈5s loop)
+  function think() {
+    show('ld');
+    const t = $('#ldt'), lines = ['Reading your 5 answers…', 'Matching ' + ctx().his + ' vibe…', 'Wrapping up ideas for ' + name + '…'];
+    lines.forEach((l, k) => setTimeout(() => { t.style.opacity = 0; setTimeout(() => { t.textContent = l; t.style.opacity = 1; }, k ? 300 : 0); }, k * 1700));
+    setTimeout(() => {
+      $('#rtitle').textContent = 'Gifts for ' + name;
+      const c = ctx(), they = c.she === 'they';
+      $$('[data-t]').forEach(el => el.textContent = el.dataset.t.replace('{she}', c.she).replace('{loves}', they ? 'love' : 'loves')
+        .replace('{shell}', c.she + '’ll').replace('{her}', c.her).replace('{his}', c.his).replace('{occ}', c.occ || 'Birthday'));
+      const fc = $$('.fchip');
+      fc[0].textContent = c.bud || 'Under ₹2,500'; fc[0].classList.toggle('on', !!c.bud);
+      fc[1].textContent = 'Arrives by ' + (c.date || '17 Oct');
+      $('#rtags').textContent = picks.map((p, i) => Q[i][2 + p]).join(' · ');
+      show('res');
+    }, 5100);
+  }
+  $$('.fchips').forEach(g => g.addEventListener('click', e => { const b = e.target.closest('.fchip'); if (b) b.classList.toggle('on'); }));
+
+  // Footer drone needs the footer width
+  const f = document.getElementById('footer');
+  const size = () => { f.style.setProperty('--w', f.clientWidth + 'px'); f.style.setProperty('--mid', f.clientWidth / 2 + 'px'); };
+  addEventListener('resize', size);
+
+  // Results header turns to glass after scrolling
+  const rtop = $('#rtop');
+  const onScroll = () => { const on = !$('#res').hidden && (boxed() ? page.scrollTop : scrollY) > 8; rtop.classList.toggle('solid', on); page.classList.toggle('scrolled', on); };
+  addEventListener('scroll', onScroll, { passive: true });
+  page.addEventListener('scroll', onScroll, { passive: true });
+
+  // Status bar: real time, real network and battery where the browser shares them
+  const clk = document.getElementById('clk');
+  const tick = () => clk.textContent = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).replace(/\s?[AP]M/i, '');
+  tick(); setInterval(tick, 15000);
+  const net = document.getElementById('net');
+  const setNet = () => {
+    const c = navigator.connection, map = { 'slow-2g': 1, '2g': 2, '3g': 3, '4g': 4 };
+    const n = !navigator.onLine ? 0 : (c && map[c.effectiveType]) || 4;
+    net.classList.toggle('off', !n);
+    [...net.children].forEach((b, i) => b.style.opacity = i < n ? 1 : .25);
+  };
+  setNet(); addEventListener('online', setNet); addEventListener('offline', setNet);
+  navigator.connection?.addEventListener?.('change', setNet);
+  navigator.getBattery?.().then(b => {
+    const el = document.getElementById('batt'), pct = document.getElementById('pct');
+    const set = () => { const v = Math.round(b.level * 100); el.firstElementChild.style.width = v + '%'; el.classList.toggle('low', v <= 20 && !b.charging); pct.textContent = v + '%'; };
+    set(); b.addEventListener('levelchange', set); b.addEventListener('chargingchange', set);
+  });
+  // Bottom menu: stretchy pill. The leading edge moves fast (220ms), the trailing edge lags (480ms).
+  (() => {
+    const bar = document.querySelector('.tabs'); if (!bar) return;
+    const tabs = [...bar.querySelectorAll('.tab')];
+    const pill = document.createElement('span'); pill.className = 'tpill'; pill.setAttribute('aria-hidden', 'true'); bar.prepend(pill);
+    const move = (t, animate) => {
+      const left = t.offsetLeft, right = bar.clientWidth - left - t.offsetWidth;
+      if (!animate) { pill.style.transition = 'none'; pill.style.left = left + 'px'; pill.style.right = right + 'px'; pill.offsetWidth; pill.style.transition = ''; return; }
+      const r = left > pill.offsetLeft;
+      pill.style.setProperty('--l-dur', r ? '480ms' : '220ms');
+      pill.style.setProperty('--r-dur', r ? '220ms' : '480ms');
+      pill.style.left = left + 'px'; pill.style.right = right + 'px';
+    };
+    const active = () => bar.querySelector('.tab.on') || tabs[0];
+    tabs.forEach((t, i) => t.addEventListener('click', e => {
+      e.preventDefault();
+      tabs.forEach(x => { x.classList.toggle('on', x === t); x.toggleAttribute('aria-current', x === t); });
+      move(t, true);
+      if (i === 0 && !/index\.html$|\/$/.test(location.pathname)) setTimeout(() => location.href = 'index.html', 480);
+    }));
+    requestAnimationFrame(() => move(active(), false));
+    addEventListener('resize', () => move(active(), false));
+    window.tabsRefresh = () => move(active(), false);  // call after the bar becomes visible
+  })();
+</script>
+</body>
+</html>

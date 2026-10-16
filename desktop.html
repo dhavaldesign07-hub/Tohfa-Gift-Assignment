@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tohfa – Gifts to India</title>
+<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:#FEFDFC; color:#2B1A12; font-family:"Satoshi","DM Sans",sans-serif; }
+  a { color:inherit; text-decoration:none; } button { font:inherit; } img { display:block; }
+  .wrap { width:1200px; margin:0 auto; }
+  /* Header */
+  .hd { position:sticky; top:0; z-index:20; padding:44px 0 0; transition:background .25s, box-shadow .25s; }
+  .hd.solid { background:#FEFDFC; box-shadow:0 1px 0 rgba(21,20,43,.08); }
+  .hd .row { display:flex; align-items:center; height:49px; }
+  .logo { font:400 36px/49px "Alfa Slab One"; color:#000; width:110px; }
+  .loc { margin-left:20px; height:36px; display:flex; align-items:center; gap:8px; padding:0 6px; border:0; background:none; border-radius:21px; backdrop-filter:blur(21px); cursor:pointer; font:600 16px/21px "DM Sans"; color:#15142B; }
+  .flag { width:24px; height:24px; border-radius:12px; background:linear-gradient(#FF9933 0 33%,#fff 33% 66%,#138808 66%); position:relative; }
+  .flag::after { content:""; position:absolute; left:10.5px; top:10.5px; width:3px; height:3px; border:.6px solid #000080; border-radius:50%; }
+  .search { margin-left:auto; width:310px; height:36px; display:flex; align-items:center; gap:8px; padding:0 9px; background:rgba(255,255,255,.8); border:1px solid #9D9D9D; border-radius:24px; }
+  .search input { border:0; background:none; outline:none; font:600 14px/18px "DM Sans"; color:#15142B; width:100%; }
+  .search input::placeholder { color:#656565; }
+  .icons { margin-left:56px; display:flex; align-items:center; gap:20px; font:500 16px/21px "DM Sans"; color:#000; }
+  .nav { display:flex; gap:32px; margin-top:44px; padding-bottom:32px; }
+  .nav a { display:flex; align-items:center; gap:2px; font:500 16px/21px "DM Sans"; color:#2B1A12; }
+  .nav { align-items:center; }
+  .hqm { margin-left:auto; }
+  .hq { display:block; height:32px; padding:0 16px; border:1px solid #756FE7; border-radius:30px; background:#fff; color:#756FE7; font:500 13px/18px "Satoshi"; cursor:default; white-space:nowrap;
+    clip-path:inset(0 0 0 100% round 30px); will-change:clip-path,transform; }
+  .sec { will-change:transform,opacity; }
+  .nav a:hover { color:#756FE7; }
+  /* Banner */
+  .banner { position:relative; height:460px; border-radius:32px; overflow:hidden; background:linear-gradient(180deg,#FFC59E 0%,#E9B2FF 32%,#9BAAEE 100%); }
+  .bin { position:absolute; inset:0; transform-origin:50% 0; will-change:transform,opacity; }
+  .bin > * { position:absolute; }
+  .swirl { left:0; top:79px; overflow:visible; }
+  .big { left:209px; top:94px; font:400 116px/126px "Alfa Slab One"; background:linear-gradient(180deg,#fff,#E9C5FE); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .tag { left:209px; top:343px; font:600 22px/29px "DM Sans"; color:#fff; }
+  .who { left:647px; top:104px; width:346px; height:250px; padding:21px 17px; border-radius:28px; background:rgba(255,255,255,.5); border:1px solid rgba(255,255,255,.8); backdrop-filter:blur(24px); }
+  .who h3 { font:700 20px/27px "Satoshi"; color:#000; margin-bottom:20px; }
+  .chips { display:flex; flex-wrap:wrap; gap:4px; }
+  .chip { height:42px; display:flex; align-items:center; gap:8px; padding:0 15px 0 7px; background:#FFFDF9; border:1px solid #D8D8D8; border-radius:24px; font:500 14px/18px "DM Sans"; color:#2B1A12; cursor:pointer; transition:background .2s, color .2s; }
+  .chip.on { background:#6C5CE7; border-color:#6C5CE7; color:#fff; }
+  .chip em { width:28px; height:28px; border-radius:40px; display:grid; place-items:center; font-style:normal; font-size:16px; }
+  .cta { left:673px; top:289px; width:294px; height:44px; display:grid; place-items:center; border-radius:30px; background:#756FE7; color:#fff; font:500 15px/20px "Satoshi"; }
+  /* Sections */
+  .sec { margin-top:78px; }
+  .sec h2 { font:500 32px/42px "DM Sans"; letter-spacing:-.03em; color:#15142B; }
+  .sec .sub { font:500 18px/24px "Satoshi"; color:#515151; }
+  .grid { display:grid; gap:24px; margin-top:32px; }
+  .occ { grid-template-columns:repeat(6,180px); }
+  .oc { position:relative; height:208px; border-radius:25.42px; background:linear-gradient(180deg,#E8F4F8,#DDCFFE); transition:transform .2s; }
+  .oc:hover, .pc:hover, .prod:hover, .nc:hover { transform:translateY(-4px); }
+  .oc img { position:absolute; left:32px; top:26px; width:116px; height:116px; }
+  .oc span { position:absolute; left:20px; top:160px; font:700 20px/27px "Satoshi"; letter-spacing:-.03em; color:#15142B; }
+  .four { grid-template-columns:repeat(4,282px); }
+  .pc { position:relative; height:192px; border-radius:20px; overflow:hidden; text-align:center; transition:transform .2s; }
+  .pc .u, .pc .c { position:absolute; left:0; right:0; font:500 20px/14px "Satoshi"; }
+  .pc .u { top:29px; } .pc .c { top:147px; }
+  .pc b { position:absolute; left:0; right:0; top:51px; font:700 36px/49px "Satoshi"; }
+  .pc .rib { position:absolute; left:0; right:0; bottom:0; height:76px; }
+  .pc .rib::before { content:""; position:absolute; left:6px; right:6px; top:0; border-top:1px dashed #000; }
+  .pc::before, .pc::after { content:""; position:absolute; top:110px; width:12px; height:12px; border-radius:50%; background:#FEFDFC; z-index:1; }
+  .pc::before { left:-6px; } .pc::after { right:-6px; }
+  .hrow { display:flex; justify-content:space-between; align-items:center; }
+  .arrows { display:flex; gap:12px; }
+  .arrows button { width:28px; height:28px; border:0; background:none; cursor:pointer; }
+  .pills { display:flex; gap:12px; margin-top:32px; align-items:center; }
+  .pill { height:36px; padding:0 13px; border:1px solid #000; border-radius:36px; background:none; font:500 16px/14px "Satoshi"; color:#2B1A12; cursor:pointer; }
+  .pill.on { height:40px; background:#DCEDDA; }
+  .prod { height:308px; border:1px solid #E3E3E3; border-radius:20px; overflow:hidden; background:#F5FBF4; transition:transform .2s; }
+  .prod .im { height:216px; background:#F7E2B8; }
+  .prod .im img { width:100%; height:100%; object-fit:cover; }
+  .prod .tx { padding:10px 12px; }
+  .prod .n { font:500 16px/22px "Satoshi"; } .prod .p { margin-top:3px; font:700 16px/22px "Satoshi"; }
+  .prod .d { margin-top:3px; font:500 14px/18px "DM Sans"; color:#3D3D3D; }
+  .bs { position:relative; height:321px; }
+  .bs i { position:absolute; left:19px; top:76px; width:244px; height:244px; border-radius:50%; }
+  .bs img { position:absolute; left:50%; top:4px; transform:translateX(-50%); max-height:251px; transition:transform .3s; }
+  .bs:hover img { transform:translateX(-50%) scale(1.06); }
+  .bs span { position:absolute; left:0; right:0; top:340px; text-align:center; font:500 20px/27px "Satoshi"; letter-spacing:-.03em; color:#15142B; }
+  .trend { position:relative; height:498px; border-radius:20px; overflow:hidden; background:linear-gradient(180deg,#ACD6FF,#E8B6A0); }
+  .trend .t { position:absolute; left:125px; width:463px; font:400 74.77px/102px "Alfa Slab One"; color:transparent; -webkit-text-stroke:2.34px rgba(255,255,255,.6); }
+  .trend .t1 { top:93px; -webkit-mask:linear-gradient(180deg,#000,transparent); mask:linear-gradient(180deg,#000,transparent); }
+  .trend .t3 { top:197px; -webkit-mask:linear-gradient(0deg,#000,transparent); mask:linear-gradient(0deg,#000,transparent); }
+  .trend .t2 { top:139px; color:#fff; -webkit-text-stroke:0; }
+  .trend p { position:absolute; left:125px; top:319px; width:386px; font:700 20px/27px "Satoshi"; color:#fff; }
+  .shop { position:absolute; left:125px; top:405px; width:294px; height:44px; display:grid; place-items:center; border-radius:30px; background:#756FE7; font:500 15px/20px "Satoshi"; color:#fff; transition:transform .2s; }
+  .shop:hover { transform:translateY(-2px); }
+  .trend img { position:absolute; left:666px; top:56px; width:386px; height:386px; }
+  .newg { grid-template-columns:repeat(3,384px); }
+  .nc { position:relative; height:421px; border-radius:20px; overflow:hidden; background:#FF5A45; clip-path:inset(0 round 20px); transition:transform .2s; }
+  .nc img { width:100%; height:100%; object-fit:cover; }
+  .nc i { position:absolute; left:0; right:0; bottom:0; height:206px; backdrop-filter:blur(8px); -webkit-mask:linear-gradient(180deg,transparent,#000 40%); mask:linear-gradient(180deg,transparent,#000 40%); }
+  .nc span { position:absolute; left:28px; top:366px; font:700 20px/27px "Satoshi"; letter-spacing:-.03em; color:#fff; }
+  /* Footer (same parameters as the mobile footer) */
+  .footer { position:relative; margin-top:152px; height:633px; overflow:hidden; background:linear-gradient(180deg,#FEFDFC 0%,#E3E8EF 25%,#CCD5E6 50%,#B9C4F0 80%,#B7C4FF 100%); color:#15142B; }
+  .footer .in { position:relative; width:1200px; height:100%; margin:0 auto; }
+  .cloud { position:absolute; left:0; opacity:.95; animation:drift 80s linear infinite; }
+  @keyframes drift { from { transform:translateX(100vw); } to { transform:translateX(-120px); } }
+  .drone { position:absolute; top:79px; left:0; width:219px; z-index:2; animation:fly 14s cubic-bezier(.45,0,.55,1) infinite; }
+  .drone div { animation:bob 2.4s ease-in-out infinite; } .drone img { width:100%; }
+  @keyframes fly { 0% { transform:translateX(-240px); } 28%,62% { transform:translateX(calc(50vw - 110px)); } 100% { transform:translateX(calc(100vw + 40px)); } }
+  @keyframes bob { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-8px); } }
+  .fsky { position:absolute; inset:0; }
+  .headline { position:absolute; left:0; top:258px; font:400 95.79px/96px "Alfa Slab One"; white-space:nowrap; background:linear-gradient(180deg,#FFFFFF 0%,#DFE7F2 100%); -webkit-background-clip:text; background-clip:text; color:transparent; user-select:none; }
+  .headline svg { display:inline-block; height:64px; width:auto; vertical-align:baseline; margin-left:14px; }
+  .about { position:absolute; left:0; top:469px; width:320px; z-index:3; background:rgba(255,255,255,.4); border-radius:24px; backdrop-filter:blur(24px); font-family:"DM Sans"; }
+  .about summary { list-style:none; cursor:pointer; display:flex; align-items:center; gap:12px; height:32px; padding:0 12px; font:600 14px/18px "DM Sans"; }
+  .about summary::-webkit-details-marker { display:none; }
+  .about summary span { flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .about[open] summary svg { transform:rotate(180deg); }
+  .about p { padding:0 12px 12px; font-size:13px; line-height:1.5; }
+  .links { position:absolute; left:4px; top:537px; display:flex; gap:40px; font:400 14px/24px "Satoshi"; }
+  .links a:hover { text-decoration:underline; }
+  .social { position:absolute; right:0; top:533px; display:flex; gap:16px; }
+  .social a { width:32px; height:32px; border-radius:24px; display:grid; place-items:center; background:rgba(255,255,255,.4); backdrop-filter:blur(24px); }
+  .social svg { width:20px; height:20px; }
+  @media (prefers-reduced-motion: reduce) { .drone, .drone div, .cloud { animation:none; } .drone { transform:translateX(calc(50vw - 110px)); } }
+  /* Smaller laptops: scale the 1440 layout down so nothing breaks */
+  @media (max-width:1280px) { body { zoom:calc(100vw / 1280px); } }
+  .cloud { animation-name:drift, float !important; animation-timing-function:linear, ease-in-out !important; animation-iteration-count:infinite !important; }
+  @keyframes float { 0%,100% { translate:0 0; } 50% { translate:0 -7px; } }
+  .cloud:nth-of-type(1) { animation-duration:38s, 5s !important; animation-delay:-7s, -1s !important; }
+  .cloud:nth-of-type(2) { animation-duration:91s, 7s !important; animation-delay:-63s, -3s !important; }
+  .cloud:nth-of-type(3) { animation-duration:57s, 6s !important; animation-delay:-41s, -4s !important; }
+  .cloud:nth-of-type(4) { animation-duration:124s, 8s !important; animation-delay:-20s, -2s !important; }
+  .cloud:nth-of-type(5) { animation-duration:72s, 5.5s !important; animation-delay:-50s, -5s !important; }
+</style>
+</head>
+<body>
+<header class="hd" id="hd"><div class="wrap">
+  <div class="row">
+    <a class="logo" href="#">Tohfa</a>
+    <button class="loc"><span class="flag"></span>Ananya · Pune 411038<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="#000" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <label class="search"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#9D9D9D" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.17" cy="9.17" r="6.67"/><path d="M17.5 17.5l-3.63-3.63"/></svg><input placeholder="Search" aria-label="Search"></label>
+    <div class="icons"><a href="#" aria-label="Reminders"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M16 3v4M8 3v4M4 10.67h16"/><path d="M10.35 18.07l1.65-.87 1.65.87-.32-1.84 1.34-1.3-1.85-.27L12 13l-.82 1.67-1.85.27 1.34 1.3z" fill="#000" stroke="none"/></svg></a><span>C$</span><a href="#" aria-label="Cart"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#000" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="18.67" r=".89"/><circle cx="17.78" cy="18.67" r=".89"/><path d="M.89.89h3.55l2.39 11.9a1.78 1.78 0 001.78 1.43h8.64a1.78 1.78 0 001.78-1.43l1.42-7.46H5.33"/></svg></a><a href="#" aria-label="Profile"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.17 18.85A4 4 0 0110 16h4a4 4 0 013.83 2.86"/></svg></a></div>
+  </div>
+  <nav class="nav"><a href="#">Birthday<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="#000" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a href="#">Anniversary<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="#000" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a href="#">Occasions<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="#000" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a href="#">Flowers<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="#000" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a href="#">Diwali<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="#000" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a href="#">International<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="#000" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a href="#">Make your Gift Hamper<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="#000" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span class="hqm"><button class="hq" type="button" tabindex="-1"><span>START QUIZ</span></button></span></nav>
+</div></header>
+
+<main class="wrap">
+  <section class="banner"><div class="bin" id="bin">
+    <svg class="swirl" width="584" height="211" viewBox="0 0 584 211" fill="none" aria-hidden="true"><path d="M498.172 206.357C507.099 202.474 557.318 205.692 575.015 171.964C602.667 119.266 545.326 103.733 491.769 53.8082C464.212 28.1201 467.768 13.7524 479.545 6.42515C492.118 -1.39709 507.649 8.59745 509.859 23.239C512.315 39.5015 510.927 60.266 498.172 79.3255C477.681 109.946 453.93 99.1107 444.616 89.8653C413.428 50.7118 320.699 -13.715 185.122 79.3255C173.163 90.3006 151.487 116.511 160.457 133.552C171.668 154.854 209.953 149.695 198.963 110.952C195.902 100.159 167.061 75.7491 39.9997 119.203C14.237 132.684 -42.2956 166.978 -62.3247 196.306" stroke="white" stroke-width="2.32856" stroke-dasharray="6.99 6.99"/><path d="M493.469 206.948L499.292 201.649L500.97 209.342L493.469 206.948Z" fill="white"/></svg>
+    <div class="big">Gift<br>karo</div>
+    <p class="tag">Take a quiz and see what your loved<br>ones will like</p>
+    <div class="who"><h3>Who are you gifting today?</h3><div class="chips" id="chips"><button class="chip on"><em style="background:#FF7EB6">👧🏼</em>Sister</button><button class="chip"><em style="background:#FFD7B2">💞</em>Partner</button><button class="chip"><em style="background:#D9E5A7">👩</em>Mom</button><button class="chip"><em style="background:#AED2EB">👱🏻‍♂️</em>Dad</button><button class="chip"><em style="background:#C2B7EA">👦</em>Brother</button><button class="chip"><em style="background:#BACEE0">🧑🏼‍🦱</em>Friend</button></div></div>
+    <button class="cta" type="button" style="border:0;cursor:default">START QUIZ</button>
+  </div>  </section>
+
+  <section class="sec"><h2>Gift by occasion</h2><p class="sub">Find your perfect gift match</p><div class="grid occ"><a class="oc" href="#"><img src="assets/birthday.png" alt=""><span>Birthday</span></a><a class="oc" href="#"><img src="assets/diwali.png" alt=""><span>Diwali</span></a><a class="oc" href="#"><img src="assets/wedding.png" alt=""><span>Wedding</span></a><a class="oc" href="#"><img src="assets/wishes.png" alt=""><span>Best wishes</span></a><a class="oc" href="#"><img src="assets/newborn.png" alt=""><span>New born</span></a><a class="oc" href="#"><img src="assets/anniv.png" alt=""><span>Anniversary</span></a></div></section>
+  <section class="sec"><h2>Shop by price</h2><div class="grid four"><a class="pc" href="#" style="background:#FFECF3"><span class="u">Under</span><b>₹1000</b><i class="rib" style="background:linear-gradient(180deg,rgba(255,255,255,.15),#FCCADA)"></i><span class="c">about C$11</span></a><a class="pc" href="#" style="background:#EDF6FF"><span class="u">Under</span><b>₹2000</b><i class="rib" style="background:linear-gradient(180deg,rgba(255,255,255,.15),#A8CCF0)"></i><span class="c">about C$29</span></a><a class="pc" href="#" style="background:#FFF8ED"><span class="u">Under</span><b>₹3000</b><i class="rib" style="background:linear-gradient(180deg,rgba(255,255,255,.15),#FFE0B2)"></i><span class="c">about C$44</span></a><a class="pc" href="#" style="background:#E6F5E4"><span class="u">Above</span><b>₹4000</b><i class="rib" style="background:linear-gradient(180deg,rgba(255,255,255,.15),#ADEDA6)"></i><span class="c">above C$58</span></a></div></section>
+  <section class="sec"><div class="hrow"><h2>Gifts That Stand Out</h2><div class="arrows"><button aria-label="Previous"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M17 7l-7 7 7 7" stroke="#B2B2B2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button aria-label="Next"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M11 7l7 7-7 7" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></div>
+    <div class="pills" id="pills"><button class="pill on">PERSONALISED</button><button class="pill">COUNTDOWN GIFTS</button><button class="pill">ANNIVERSARY GIFTS</button><button class="pill">STATIONERY GIFTS</button><button class="pill">TRAVEL ACCESSORIES</button></div><div class="grid four"><div class="prod"><div class="im"><img src="assets/d/p1.png" alt=""></div><div class="tx"><p class="n">Trendy wooden frame photo</p><p class="p">CAD 14.90</p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/d/p2.png" alt=""></div><div class="tx"><p class="n">Wedding Caricature</p><p class="p">CAD 14.77</p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/d/p3.png" alt=""></div><div class="tx"><p class="n">Travel Memory Box</p><p class="p">CAD 14.77</p><p class="d">Delivery by 06th Oct</p></div></div><div class="prod"><div class="im"><img src="assets/d/p4.png" alt=""></div><div class="tx"><p class="n">Photo Pendant Necklace</p><p class="p">CAD 12.77</p><p class="d">Delivery by 06th Oct</p></div></div></div></section>
+  <section class="sec"><h2>Best Sellers</h2><div class="grid four"><a class="bs" href="#"><i style="background:linear-gradient(180deg,rgba(236,230,255,0),#DCEDDA)"></i><img src="assets/bs-cake.png" alt="" style="width:172px"><span>Cake</span></a><a class="bs" href="#"><i style="background:linear-gradient(180deg,rgba(219,237,255,0),#DBEDFF)"></i><img src="assets/bs-plants.png" alt="" style="width:170px"><span>Plants</span></a><a class="bs" href="#"><i style="background:linear-gradient(180deg,rgba(236,230,255,0),#ECE6FF)"></i><img src="assets/bs-flowers.png" alt="" style="width:186px"><span>Flowers</span></a><a class="bs" href="#"><i style="background:linear-gradient(180deg,rgba(255,248,237,0),#F4E4CB)"></i><img src="assets/bs-frame.png" alt="" style="width:151px"><span>Photo Frame</span></a></div></section>
+  <section class="sec"><div class="trend"><div class="t t1">TRENDING</div><div class="t t3">TRENDING</div><div class="t t2">TRENDING</div>
+    <p>Diwali is 30 days away. Order your favourite early, it arrives before the rush.</p><a class="shop" href="#">SHOP NOW</a><img src="assets/trending.png" alt="Diwali mithai gift box"></div></section>
+  <section class="sec"><h2>Newly Launched</h2><div class="grid newg"><a class="nc" href="#"><img src="assets/n1.png" alt=""><i style="background:linear-gradient(180deg,rgba(237,181,133,0),#E3AA7B)"></i><span>CARICATURE</span></a><a class="nc" href="#"><img src="assets/n2.png" alt=""><i style="background:linear-gradient(180deg,rgba(79,149,159,0),#8597CB)"></i><span>HOUSE PARTY</span></a><a class="nc" href="#"><img src="assets/n3.png" alt=""><i style="background:linear-gradient(180deg,rgba(93,169,209,0),#8EC3DF)"></i><span>HAMPERS</span></a><a class="nc" href="#"><img src="assets/n4.png" alt=""><i style="background:linear-gradient(180deg,rgba(253,174,153,0),#EBA5A5)"></i><span>GIFTS</span></a><a class="nc" href="#"><img src="assets/n5.png" alt=""><i style="background:linear-gradient(180deg,rgba(142,198,114,0),#ADCC9E)"></i><span>STATIONERY</span></a><a class="nc" href="#"><img src="assets/n6.png" alt=""><i style="background:linear-gradient(180deg,rgba(253,174,153,0),#B9937E)"></i><span>WATCH</span></a></div></section>
+</main>
+
+<footer class="footer">
+  <div class="fsky"><img class="cloud" src="assets/cloud2.png" alt="" style="top:147px;width:98px;animation-duration:38s;animation-delay:-7s"><img class="cloud" src="assets/cloud2.png" alt="" style="top:111px;width:93px;animation-duration:91s;animation-delay:-63s"><img class="cloud" src="assets/cloud2.png" alt="" style="top:394px;width:62px;animation-duration:57s;animation-delay:-41s"><img class="cloud" src="assets/cloud2.png" alt="" style="top:70px;width:62px;animation-duration:124s;animation-delay:-20s"><img class="cloud" src="assets/cloud2.png" alt="" style="top:306px;width:60px;animation-duration:46s;animation-delay:-29s"><div class="drone" aria-hidden="true"><div><img src="assets/drone-anim.png" alt=""></div></div></div>
+  <div class="in">
+    <div class="headline" aria-label="Sending Pyaarcel">Sending Pyaarcel<svg viewBox="0 0 39 34" aria-hidden="true"><defs><linearGradient id="hg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#DFE7F2"/></linearGradient></defs><path fill="url(#hg)" d="M35.5189 2.96767C34.5785 2.02684 33.4619 1.28049 32.233 0.771291C31.0041 0.262088 29.6869 0 28.3567 0C27.0264 0 25.7092 0.262088 24.4803 0.771291C23.2514 1.28049 22.1349 2.02684 21.1945 2.96767L19.2428 4.91933L17.2911 2.96767C15.3916 1.06814 12.8153 0.000984598 10.1289 0.000984618C7.44256 0.000984638 4.86623 1.06814 2.96669 2.96767C1.06715 4.86721 2.00149e-08 7.44354 0 10.1299C-2.00149e-08 12.8163 1.06715 15.3926 2.96669 17.2921L4.91835 19.2438L19.2428 33.5682L33.5672 19.2438L35.5189 17.2921C36.4597 16.3517 37.2061 15.2352 37.7153 14.0063C38.2245 12.7773 38.4866 11.4601 38.4866 10.1299C38.4866 8.79966 38.2245 7.48246 37.7153 6.25354C37.2061 5.02462 36.4597 3.90807 35.5189 2.96767Z"/></svg></div>
+    <details class="about"><summary><span>Gift Karo is a gifting app and website for Indians living abroad.</span>
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="#15142B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+      <p>Whether you're in Toronto, London, Dubai or Sydney, you can send a gift to anyone you love in India. You pay in your own currency, and we deliver within India, right to their door.</p></details>
+    <nav class="links"><a href="#">About Us</a><a href="#">Blogs</a><a href="#">Career</a><a href="#">Policies</a><a href="#">Contact Us</a></nav>
+    <div class="social">
+      <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="#15142B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v4h3v7h4v-7h3l1-4h-4V8a1 1 0 011-1h3V3h-3a5 5 0 00-5 5v2H7z"/></svg></a>
+      <a href="#" aria-label="X"><svg viewBox="0 0 24 24" fill="none" stroke="#15142B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l11.7 16H20L8.3 4H4zM4 20l6.8-6.8M13.2 10.8L20 4"/></svg></a>
+      <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="#15142B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="12" cy="12" r="3.5"/><path d="M16.5 7.5v.01"/></svg></a>
+    </div>
+  </div>
+</footer>
+<script>
+  const hd = document.getElementById('hd');
+  // Scroll effects, all tied to the scroll position so they move as smoothly as the page
+  const banner = document.querySelector('.banner'), bin = document.getElementById('bin'), hq = document.querySelector('.hq');
+  const secs = [...document.querySelectorAll('.sec')];
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const clamp = v => Math.max(0, Math.min(1, v));
+  let ticking = false;
+  const update = () => {
+    ticking = false;
+    const y = scrollY, vh = innerHeight, hb = hd.getBoundingClientRect().bottom, br = banner.getBoundingClientRect();
+    hd.classList.toggle('solid', y > 8);
+    // Header START QUIZ: stays in place and slides in 48px from the right while a mask reveals it (right to left) over the last 160px of scrolling past the banner
+    const q = clamp((hb - br.bottom + 160) / 160);
+    const e = 1 - Math.pow(1 - q, 3); // ease-out
+    hq.style.clipPath = `inset(0 0 0 ${(1 - e) * 100}% round 30px)`; hq.style.transform = `translateX(${(1 - e) * 48}px)`; hq.tabIndex = q > .5 ? 0 : -1;
+    if (still) return;
+    // Banner: content rises at half speed, shrinks a little and fades; the rounded banner masks it
+    const p = clamp((hb - br.top) / br.height);
+    bin.style.transform = `translateY(${(hb - br.top) * 0.5 * (p > 0)}px) scale(${1 - p * 0.08})`;
+    bin.style.opacity = 1 - p * 0.9;
+    // Sections below: start 80px lower and faded, settle as they reach the middle of the screen
+    for (const s of secs) {
+      const t = clamp((vh - s.getBoundingClientRect().top) / (vh * 0.6));
+      s.style.transform = `translateY(${(1 - t) * 80}px)`; s.style.opacity = 0.15 + t * 0.85;
+    }
+  };
+  addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+  addEventListener('resize', update); update();
+  const one = (box, cls, cb) => box.addEventListener('click', e => { const b = e.target.closest(cls); if (!b) return; box.querySelectorAll(cls).forEach(x => x.classList.toggle('on', x === b)); cb && cb(b); });
+  one(document.getElementById('chips'), '.chip');
+  one(document.getElementById('pills'), '.pill');
+</script>
+</body>
+</html>
